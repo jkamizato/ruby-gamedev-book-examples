@@ -12,8 +12,13 @@ class Explosion
     Gosu::Image.load_tiles(window, SPRITE, 128, 128, false)
   end
 
-  def initialize (animation, x, y)
+  def self.load_sound(window)
+    Gosu::Sample.new(window, media_path("explosion.mp3"))
+  end
+
+  def initialize (animation, sound,  x, y)
     @animation = animation
+    sound.play
     @x, @y = x, y
     @current_frame = 0
   end
@@ -56,6 +61,10 @@ class GameWindow < Gosu::Window
     self.caption = "Hello Animation"
     @background = Gosu::Image.new(self, BACKGROUND, false)
     @animation = Explosion.load_animation(self)
+    @music = Gosu::Song.new(self, media_path("menu_music.mp3"))
+    @music.volume = 0.5
+    @music.play(true)
+    @sound = Explosion.load_sound(self)
     @explosions = []
   end
 
@@ -73,7 +82,7 @@ class GameWindow < Gosu::Window
   def button_down(id)
     close if id == Gosu::KbEscape
     if id == Gosu::MsLeft
-      @explosions.push(Explosion.new(@animation, mouse_x, mouse_y))
+      @explosions.push(Explosion.new(@animation, @sound, mouse_x, mouse_y))
     end
   end
 
